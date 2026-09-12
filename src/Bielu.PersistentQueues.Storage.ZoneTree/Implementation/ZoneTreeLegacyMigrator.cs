@@ -111,6 +111,9 @@ internal sealed class ZoneTreeLegacyMigrator(
             .SetValueSerializer(new ByteArraySerializer())
             .SetMutableSegmentMaxItemCount(options.MutableSegmentMaxItemCount)
             .SetDiskSegmentMaxItemCount(options.DiskSegmentMaxItemCount)
+            // Guid has no registered IKeyHasher; disable the mutable-segment Bloom
+            // filter (new in ZoneTree 1.9.x) instead of requiring one.
+            .SetMutableSegmentBloomFilterBitsPerItem(0)
             .SetIsDeletedDelegate((in Guid _, in Memory<byte> value) => value.Length == 0)
             .SetMarkValueDeletedDelegate((ref Memory<byte> value) => value = Memory<byte>.Empty);
 
