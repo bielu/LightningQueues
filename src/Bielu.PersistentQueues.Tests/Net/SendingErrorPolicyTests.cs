@@ -136,7 +136,7 @@ public class SendingErrorPolicyTests(ITestOutputHelper output) : TestBase(output
     {
         return ErrorPolicyScenarioAsync(async (policy, store, failures, _) =>
         {
-            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(6));
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             Message? observed = null;
             var message = Message.Create(
                 destinationUri: "lq.tcp://localhost:5150/blah",
@@ -149,11 +149,6 @@ public class SendingErrorPolicyTests(ITestOutputHelper output) : TestBase(output
             }
 
             var errorTask = policy.StartRetriesAsync(cancellation.Token);
-            var failure = new OutgoingMessageFailure
-            {
-                Messages = [message],
-                ShouldRetry = true
-            };
             var retriesTask = Task.Factory.StartNew(async () =>
             {
                 await foreach (var msg in policy.Retries.ReadAllAsync(cancellation.Token))
@@ -161,16 +156,26 @@ public class SendingErrorPolicyTests(ITestOutputHelper output) : TestBase(output
                     observed = msg;
                 }
             }, cancellation.Token);
-            failures.Writer.TryWrite(failure);
-            await DeterministicDelayAsync(TimeSpan.FromSeconds(1.5), cancellation.Token);
+
+            // Backoff is SentAttempts^2 seconds. Feed each retried message back in (as a
+            // real failure loop would) so attempts - and therefore the delay - actually
+            // increase: 0 -> 1 (1s), 1 -> 2 (4s). Checks use wide margins around each
+            // threshold since these are real wall-clock delays.
+            failures.Writer.TryWrite(new OutgoingMessageFailure { Messages = [message], ShouldRetry = true });
+            await DeterministicDelayAsync(TimeSpan.FromSeconds(2), cancellation.Token);
             observed.ShouldNotBeNull("first");
+            var firstRetry = observed!.Value;
+            firstRetry.SentAttempts.ShouldBe(1);
             observed = null;
-            failures.Writer.TryWrite(failure);
+
+            failures.Writer.TryWrite(new OutgoingMessageFailure { Messages = [firstRetry], ShouldRetry = true });
             observed.ShouldBeNull("second");
-            await DeterministicDelayAsync(TimeSpan.FromSeconds(1), cancellation.Token);
+            await DeterministicDelayAsync(TimeSpan.FromSeconds(2), cancellation.Token);
             observed.ShouldBeNull("third");
-            await Task.WhenAny(DeterministicDelayAsync(TimeSpan.FromSeconds(4), cancellation.Token));
+            await DeterministicDelayAsync(TimeSpan.FromSeconds(4), cancellation.Token);
             observed.ShouldNotBeNull("fourth");
+            observed!.Value.SentAttempts.ShouldBe(2);
+
             await cancellation.CancelAsync();
             await Task.WhenAny(errorTask.AsTask(), retriesTask);
         });
