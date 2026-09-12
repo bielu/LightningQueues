@@ -473,7 +473,9 @@ public class LmdbMessageStore : IMessageStore
             // LightningDB specific handling
             foreach (var (key, _) in cursor.AsEnumerable())
             {
-                var keyBytes = key.AsSpan();
+                // LightningDB 0.23+ includes the native NUL terminator when reporting
+                // key length for entries in the unnamed/root database.
+                var keyBytes = key.AsSpan().TrimEnd((byte)0);
                 var queueName = Encoding.UTF8.GetString(keyBytes);
                 list.Add(queueName);
             }
