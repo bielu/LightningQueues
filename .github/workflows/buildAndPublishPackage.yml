@@ -24,6 +24,13 @@ jobs:
   # Pull request: build/test/pack validation, publish nothing.
   buildPr:
     if: github.event_name == 'pull_request'
+    # ciNoSchema.yml posts the coverage report and the duplicate-code report back to the PR as
+    # comments, which needs pull-requests: write. The workflow-level default of contents: read
+    # leaves that at none, so the run builds and tests green and then fails at the comment step
+    # with "Resource not accessible by integration".
+    permissions:
+      contents: read
+      pull-requests: write
     uses: bielu/bielu.GithubActions.Templates/.github/workflows/ciNoSchema.yml@8143c5eb093e33c85bc8982813841a947596c7f9
     with:
       suffix: "pr"
@@ -94,6 +101,14 @@ jobs:
       always() && !cancelled() && needs.betaVersions.result == 'success'
       && (github.event_name == 'workflow_dispatch'
           || (github.event_name == 'push' && needs.version.outputs.hasChangesets == 'true'))
+    # release.yml's nested publish-npm job hard-declares `id-token: write` (npm provenance).
+    # GitHub validates every nested job's permissions when the workflow starts, before any `if:`
+    # is evaluated, so `publish-npm: false` does not exempt it. The workflow-level default of
+    # `contents: read` leaves id-token at `none`, which fails the run with startup_failure, so
+    # the calling job has to grant it explicitly.
+    permissions:
+      contents: read
+      id-token: write
     concurrency:
       group: release-main
       cancel-in-progress: false
@@ -143,6 +158,10 @@ jobs:
   releaseStable:
     needs: version
     if: github.event_name == 'push' && needs.version.outputs.hasChangesets == 'false'
+    # Same nested publish-npm id-token requirement as releaseBeta above.
+    permissions:
+      contents: read
+      id-token: write
     concurrency:
       group: release-main
       cancel-in-progress: false
