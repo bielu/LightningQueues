@@ -362,7 +362,7 @@ public class Queue : IQueue
     /// </summary>
     /// <param name="message">The message to enqueue.</param>
     /// <remarks>
-    /// Unlike <see cref="Send"/>, this method adds a message directly to a local queue
+    /// Unlike <see cref="Send(Message)"/>, this method adds a message directly to a local queue
     /// without sending it over the network. The message is stored for persistence and
     /// made available for immediate processing.
     /// </remarks>

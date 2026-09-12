@@ -230,7 +230,7 @@ public readonly struct Message
 
     /// <summary>
     /// Gets the number of times this message has been attempted for processing by a consumer.
-    /// This counter is incremented each time <see cref="IQueueContext.ReceiveLater"/> is called.
+    /// This counter is incremented each time <see cref="IQueueContext.ReceiveLater(System.TimeSpan)"/> is called.
     /// </summary>
     public int ProcessingAttempts => Headers.GetProcessingAttempts();
 

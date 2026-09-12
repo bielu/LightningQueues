@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
 /// <summary>
 /// Builder for configuring Bielu.PersistentQueues services.
 /// </summary>
+/// <param name="services">The service collection being configured.</param>
 public class PersistentQueuesBuilder(IServiceCollection services)
 {
     private IPEndPoint? _endpoint;
@@ -49,11 +50,6 @@ public class PersistentQueuesBuilder(IServiceCollection services)
     private bool _autoStart { get; set; }
     private Func<IServiceProvider, IMessageStore>? _storeFactory;
     private readonly DeadLetterOptions _deadLetterOptions = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="PersistentQueuesBuilder"/>.
-    /// </summary>
-    /// <param name="services">The service collection being configured.</param>
 
     /// <summary>
     /// Gets the service collection being configured.

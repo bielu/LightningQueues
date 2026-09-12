@@ -130,8 +130,8 @@ public interface IPartitionedQueue : IQueue
     /// </summary>
     /// <param name="queueName">The base queue name of the existing non-partitioned queue.</param>
     /// <param name="partitionCount">The number of partitions to create.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="partitionCount"/> is less than or equal to zero.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the queue is already partitioned. Use <see cref="Repartition"/> instead.</exception>
+    /// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="partitionCount"/> is less than or equal to zero.</exception>
+    /// <exception cref="System.InvalidOperationException">Thrown when the queue is already partitioned. Use <see cref="Repartition"/> instead.</exception>
     /// <remarks>
     /// <para>
     /// This method creates the partition sub-queues and moves all messages from the
@@ -156,7 +156,7 @@ public interface IPartitionedQueue : IQueue
     /// from all partitions into a single queue with the base name.
     /// </summary>
     /// <param name="queueName">The base queue name of the partitioned queue.</param>
-    /// <exception cref="InvalidOperationException">Thrown when the queue is not partitioned.</exception>
+    /// <exception cref="System.InvalidOperationException">Thrown when the queue is not partitioned.</exception>
     /// <remarks>
     /// <para>
     /// This method moves all messages from every partition sub-queue back into
@@ -182,8 +182,8 @@ public interface IPartitionedQueue : IQueue
     /// </summary>
     /// <param name="queueName">The base queue name of the partitioned queue.</param>
     /// <param name="newPartitionCount">The new number of partitions.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="newPartitionCount"/> is less than or equal to zero.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the queue is not partitioned. Use <see cref="EnablePartitioning"/> instead.</exception>
+    /// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="newPartitionCount"/> is less than or equal to zero.</exception>
+    /// <exception cref="System.InvalidOperationException">Thrown when the queue is not partitioned. Use <see cref="EnablePartitioning"/> instead.</exception>
     /// <remarks>
     /// <para>
     /// This method collects all messages from the existing partitions, creates the new partition
