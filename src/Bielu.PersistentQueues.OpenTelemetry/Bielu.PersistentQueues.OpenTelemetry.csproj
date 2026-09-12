@@ -1,9 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <Description>OpenTelemetry metrics and tracing instrumentation for Bielu.PersistentQueues</Description>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>Bielu.PersistentQueues.OpenTelemetry</PackageId>
+        <PackageTags>queue;persistent;messaging;opentelemetry;metrics;observability</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>

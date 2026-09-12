@@ -13,9 +13,35 @@
         <PackageOutputPath>$(MSBuildProjectDirectory)/../../dist</PackageOutputPath>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageIcon>icon.png</PackageIcon>
+        <!-- Applies to every shipping package, not just the core one: a published NuGet
+             version is immutable, so a package without a license can never be corrected. -->
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) 2017 LightningQueues, (c) 2026 bielu</Copyright>
         <RepositoryUrl>https://github.com/bielu/Bielu.PersistentQueues</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageProjectUrl>https://github.com/bielu/Bielu.PersistentQueues</PackageProjectUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Ship the XML docs that already exist in source so consumers get IntelliSense.
+             CS1591 is suppressed rather than fixed: it would otherwise warn for every public
+             member that has no doc comment yet, which is not a release blocker. -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Symbols + Source Link, so consumers can step into the packages. The SourceLink
+             GitHub provider ships in the .NET SDK, so no PackageReference is needed. -->
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <!-- Normalizes embedded paths so CI-produced packages are byte-reproducible. -->
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     </PropertyGroup>
 
     <ItemGroup>

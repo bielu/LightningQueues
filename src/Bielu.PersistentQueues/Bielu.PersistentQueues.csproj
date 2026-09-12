@@ -8,7 +8,6 @@
     <AssemblyName>Bielu.PersistentQueues</AssemblyName>
     <PackageId>Bielu.PersistentQueues</PackageId>
     <PackageTags>queue;messaging;store-and-forward;persistent</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
